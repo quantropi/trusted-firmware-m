@@ -388,8 +388,12 @@ endif()
 #========================= Platform region defs ===============================#
 
 if(NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "")
+if(NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "MASQ")
     string(REGEX MATCH "[0-9]*$" SIG_LEN ${MCUBOOT_SIGNATURE_TYPE})
     string(REGEX MATCH "^[A-Z]*" SIG_TYPE ${MCUBOOT_SIGNATURE_TYPE})
+else()
+    string(REGEX MATCH "^[A-Z]*" SIG_TYPE ${MCUBOOT_SIGNATURE_TYPE})
+endif()
 endif()
 
 #TODO maybe just link the other platforms to this
@@ -404,6 +408,7 @@ target_compile_definitions(platform_region_defs
         DAUTH_${DEBUG_AUTHENTICATION}
         $<$<BOOL:${MCUBOOT_IMAGE_NUMBER}>:MCUBOOT_IMAGE_NUMBER=${MCUBOOT_IMAGE_NUMBER}>
         $<$<BOOL:${MCUBOOT_BUILTIN_KEY}>:MCUBOOT_BUILTIN_KEY>
+        $<$<STREQUAL:${SIG_TYPE},MASQ>:MCUBOOT_SIGN_MASQ>
         $<$<STREQUAL:${SIG_TYPE},RSA>:MCUBOOT_SIGN_RSA>
         $<$<STREQUAL:${SIG_TYPE},RSA>:MCUBOOT_SIGN_RSA_LEN=${SIG_LEN}>
         $<$<STREQUAL:${SIG_TYPE},EC>:MCUBOOT_SIGN_EC${SIG_LEN}>

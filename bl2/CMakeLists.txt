@@ -14,12 +14,17 @@ project("Bootloader" VERSION 0.1.0 LANGUAGES C ASM)
 ############################### BL2_CRYPTO_CONFIG ##############################
 
 if(NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "")
+if(NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "MASQ")
     string(REGEX MATCH "[0-9]*$" SIG_LEN ${MCUBOOT_SIGNATURE_TYPE})
     string(REGEX MATCH "^[A-Z]*" SIG_TYPE ${MCUBOOT_SIGNATURE_TYPE})
+else()
+    string(REGEX MATCH "^[A-Z]*" SIG_TYPE ${MCUBOOT_SIGNATURE_TYPE})
+endif()
 endif()
 
 set(is_ec_signature  "$<STREQUAL:${SIG_TYPE},EC>")
 set(is_rsa_signature "$<STREQUAL:${SIG_TYPE},RSA>")
+set(is_masq_signature "$<STREQUAL:${SIG_TYPE},MASQ>")
 
 add_library(bl2_crypto_config INTERFACE)
 
@@ -28,6 +33,7 @@ target_compile_definitions(bl2_crypto_config
         MBEDTLS_CONFIG_FILE="${MCUBOOT_MBEDCRYPTO_CONFIG_FILEPATH}"
         MBEDTLS_PSA_CRYPTO_CONFIG_FILE="${MCUBOOT_PSA_CRYPTO_CONFIG_FILEPATH}"
         # The config files have conditional includes based on these four definitions
+        $<${is_masq_signature}:MCUBOOT_SIGN_MASQ>
         $<${is_rsa_signature}:MCUBOOT_SIGN_RSA>
         $<${is_rsa_signature}:MCUBOOT_SIGN_RSA_LEN=${SIG_LEN}>
         $<${is_ec_signature}:MCUBOOT_SIGN_EC${SIG_LEN}>
@@ -102,11 +108,34 @@ list(APPEND BL2_CRYPTO_SRC
     $<${is_rsa_signature}:${MBEDCRYPTO_PATH}/library/md.c>
     $<$<AND:${is_ec_signature},${build_p256m}>:${MBEDCRYPTO_PATH}/3rdparty/p256-m/p256-m_driver_entrypoints.c>
     $<$<AND:${is_ec_signature},${build_p256m}>:${MBEDCRYPTO_PATH}/3rdparty/p256-m/p256-m/p256-m.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/psa_crypto_rsa.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/rsa.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/rsa_alt_helpers.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/bignum.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/bignum_core.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/constant_time.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/asn1parse.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/asn1write.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/oid.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/base64.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/md.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/pem.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/pk.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/pk_wrap.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/pk_wrap_masq_ml.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/pk_wrap_masq_ppk.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/pkcs12.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/pkparse.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/sha512.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/x509.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/x509_crt.c>
+    $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/masq_bn_util_mbedtls.c>
+    $<${is_masq_signature}:${PUBKEY_PATH}/quantropi-pubkey.c>
     ${MBEDCRYPTO_PATH}/library/aes.c
 )
-
 add_library(bl2_crypto STATIC ${BL2_CRYPTO_SRC})
 
+if(NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "MASQ")
 target_include_directories(bl2_crypto
     PUBLIC
         ${MBEDCRYPTO_PATH}/library
@@ -121,6 +150,34 @@ target_link_libraries(bl2_crypto
     PUBLIC
         bl2_crypto_config
 )
+else()
+target_include_directories(bl2_crypto
+    PUBLIC
+        ${MBEDCRYPTO_PATH}/library
+        ${MBEDCRYPTO_PATH}/include
+        ${MBEDTLS_MASQ_SDK_DIR}/ds/lib_ghppk
+        ${MBEDTLS_MASQ_SDK_DIR}/ds/lib_mldsa
+        ${MBEDTLS_MASQ_SDK_DIR}/kem/lib_hppk
+        ${MBEDTLS_MASQ_SDK_DIR}/kem/lib_mlkem
+        ${MBEDTLS_MASQ_SDK_DIR}/qeep/lib
+)
+
+target_compile_options(bl2_crypto
+    PRIVATE
+        ${BL2_COMPILER_CP_FLAG}
+)
+
+target_link_libraries(bl2_crypto
+    PUBLIC
+        bl2_crypto_config
+        -L${MBEDTLS_MASQ_SDK_DIR}/qeep/lib
+        qeep-${MBEDTLS_MASQLIB_SUFFIX}
+        -L${MBEDTLS_MASQ_SDK_DIR}/ds/lib_ghppk
+        masq_ds_ghppk-${MBEDTLS_MASQLIB_SUFFIX}
+        -L${MBEDTLS_MASQ_SDK_DIR}/kem/lib_hppk
+        masq_kem_hppk-${MBEDTLS_MASQLIB_SUFFIX}
+)
+endif()
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE_LOWER)
 # IAR only allows 1 optimization option for the compilation unit

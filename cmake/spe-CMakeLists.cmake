@@ -161,6 +161,10 @@ if(BL2 AND PLATFORM_DEFAULT_IMAGE_SIGNING)
             $<TARGET_FILE_DIR:${NS_TARGET_NAME}>/${S_NS_SIGNED_TARGET_NAME}.bin
     )
 
+if (QTP_SIGN)
+    set(qtp_sign "-t ${QTP_SIGN}")
+endif()
+
     if (MCUBOOT_IMAGE_NUMBER GREATER 1)
 
         add_custom_target(${NS_TARGET_NAME}_signed_bin
@@ -175,6 +179,7 @@ if(BL2 AND PLATFORM_DEFAULT_IMAGE_SIGNING)
 
             #Sign non-secure binary image with provided secret key
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/scripts/wrapper/wrapper.py
+                ${qtp_sign}
                 --version ${MCUBOOT_IMAGE_VERSION_NS}
                 --layout ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/layout_files/signing_layout_ns.o
                 --key ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/keys/image_ns_signing_private_key.pem
@@ -237,6 +242,7 @@ if(BL2 AND PLATFORM_DEFAULT_IMAGE_SIGNING)
             # sign the combined tfm_s_ns.bin file
             COMMAND ${Python3_EXECUTABLE}
                 ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/scripts/wrapper/wrapper.py
+                ${qtp_sign}
                 --version ${MCUBOOT_IMAGE_VERSION_S}
                 --layout ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/layout_files/signing_layout_s_ns.o
                 --key ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/keys/image_s_signing_private_key.pem

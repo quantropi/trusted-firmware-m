@@ -201,6 +201,7 @@ if(BL2 AND PLATFORM_DEFAULT_IMAGE_SIGNING)
     install(DIRECTORY ${MCUBOOT_PATH}/scripts/imgtool
             DESTINATION ${INSTALL_IMAGE_SIGNING_DIR}/scripts)
 
+  if (NOT QTP_IMAGE_SIGNING)
     if (MCUBOOT_ENC_IMAGES)
         install(FILES ${MCUBOOT_KEY_ENC}
                 RENAME image_enc_key.pem
@@ -230,6 +231,16 @@ if(BL2 AND PLATFORM_DEFAULT_IMAGE_SIGNING)
         install(FILES $<TARGET_FILE_DIR:bl2>/image_ns_signing_public_key.pem
                 DESTINATION ${INSTALL_IMAGE_SIGNING_DIR}/keys)
     endif()
+  else()
+        install(FILES $<TARGET_OBJECTS:signing_layout_s>
+            DESTINATION ${INSTALL_IMAGE_SIGNING_DIR}/layout_files)
+
+        if(MCUBOOT_IMAGE_NUMBER GREATER 1)
+            install(FILES $<TARGET_OBJECTS:signing_layout_ns>
+                DESTINATION ${INSTALL_IMAGE_SIGNING_DIR}/layout_files)
+        endif()
+  endif()
+
 endif()
 
 if(TFM_PARTITION_FIRMWARE_UPDATE)
@@ -309,3 +320,10 @@ configure_file(${CMAKE_SOURCE_DIR}/config/spe_config.cmake.in
 # Toolchain utils
 install(FILES       cmake/set_extensions.cmake
         DESTINATION ${INSTALL_CMAKE_DIR})
+
+#install(DIRECTORY   ${CMAKE_SOURCE_DIR}/secure_fw/partitions/initial_attestation
+#        DESTINATION ${CMAKE_BINARY_DIR}/api_ns
+#        FILES_MATCHING PATTERN "*.h")
+
+#install(FILES       ${CONFIG_TFM_SOURCE_PATH}/secure_fw/spm/include/boot/tfm_boot_status.h
+#        DESTINATION ${CMAKE_BINARY_DIR}/api_ns/initial_attestation)

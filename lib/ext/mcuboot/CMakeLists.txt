@@ -11,7 +11,7 @@ fetch_remote_library(
     LIB_NAME                mcuboot
     LIB_SOURCE_PATH_VAR     MCUBOOT_PATH
     FETCH_CONTENT_ARGS
-        GIT_REPOSITORY      https://github.com/mcu-tools/mcuboot.git
+        GIT_REPOSITORY      https://github.com/quantropi/mcuboot.git
         GIT_TAG             ${MCUBOOT_VERSION}
         GIT_PROGRESS        TRUE
         GIT_SUBMODULES      "${MCUBOOT_SUBMODULES}"

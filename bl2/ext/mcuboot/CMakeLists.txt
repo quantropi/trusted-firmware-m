@@ -89,6 +89,7 @@ configure_file(include/mcuboot_config/mcuboot_config.h.in
 
 if (PLATFORM_DEFAULT_IMAGE_SIGNING)
     find_package(Python3)
+  if (NOT QTP_IMAGE_SIGNING)
     if(MCUBOOT_GENERATE_SIGNING_KEYPAIR)
         string(REGEX MATCH "[0-9]*$" SIG_LEN ${MCUBOOT_SIGNATURE_TYPE})
         string(REGEX MATCH "^[A-Z]*" SIG_TYPE ${MCUBOOT_SIGNATURE_TYPE})
@@ -151,6 +152,7 @@ if (PLATFORM_DEFAULT_IMAGE_SIGNING)
             -o image_ns_signing_public_key.pem
         COMMAND ${CMAKE_COMMAND} -E copy image_ns_signing_public_key.pem $<TARGET_FILE_DIR:bl2>
     )
+  endif()
 
     set(IMAGE_TYPE "S_IMAGE")
     set(FLASH_AREA_NUM ${MCUBOOT_S_IMAGE_FLASH_AREA_NUM})
@@ -185,6 +187,10 @@ if (PLATFORM_DEFAULT_IMAGE_SIGNING)
     add_custom_target(tfm_s_signed_bin
         SOURCES tfm_s_signed.bin
     )
+if (QTP_SIGN)
+    set(qtp_sign "-t ${QTP_SIGN}")
+endif()
+
     add_custom_command(OUTPUT tfm_s_signed.bin
         DEPENDS tfm_s_bin signing_layout_s
         DEPENDS $<IF:$<BOOL:${MCUBOOT_GENERATE_SIGNING_KEYPAIR}>,generated_private_key,>
@@ -192,6 +198,7 @@ if (PLATFORM_DEFAULT_IMAGE_SIGNING)
 
         #Sign secure binary image with provided secret key
         COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/wrapper/wrapper.py
+            ${qtp_sign}
             -v ${MCUBOOT_IMAGE_VERSION_S}
             --layout $<TARGET_OBJECTS:signing_layout_s>
             -k ${MCUBOOT_KEY_S}
