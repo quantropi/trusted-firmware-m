@@ -53,9 +53,9 @@ __asm("  .global __ARM_use_no_argv\n");
 #endif
 
 #ifdef MCUBOOT_ENCRYPT_RSA
-#define BL2_MBEDTLS_MEM_BUF_LEN 0x3000
+#define BL2_MBEDTLS_MEM_BUF_LEN 0x6000
 #else
-#define BL2_MBEDTLS_MEM_BUF_LEN 0x2000
+#define BL2_MBEDTLS_MEM_BUF_LEN 0x4000
 #endif
 
 /* Static buffer to be used by mbedtls for memory allocation */
@@ -139,7 +139,7 @@ int main(void)
         boot_platform_error_state(err);
     }
 
-    BOOT_LOG_INF("Starting bootloader");
+    BOOT_LOG_INF("Starting bootloader with buffer in address(0x%p) and size(0x%x)", mbedtls_mem_buf, BL2_MBEDTLS_MEM_BUF_LEN);
 
     plat_err = tfm_plat_otp_init();
     if (plat_err != TFM_PLAT_ERR_SUCCESS) {
