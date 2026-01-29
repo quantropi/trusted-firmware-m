@@ -22,16 +22,16 @@
 #define BL2_MSP_STACK_SIZE      0x0020000
 
 #define LOADER_NS_MSP_STACK_SIZE 0x0000400
-#define LOADER_NS_HEAP_SIZE      0x0000400
+#define LOADER_NS_HEAP_SIZE      0x0000200
 #define LOADER_NS_PSP_STACK_SIZE 0x0000400
 
 #define LOADER_S_MSP_STACK_SIZE 0x0000400
-#define LOADER_S_HEAP_SIZE      0x0000400
+#define LOADER_S_HEAP_SIZE      0x0000200
 #define LOADER_S_PSP_STACK_SIZE 0x0000400
 
 
 #ifdef ENABLE_HEAP
-    #define S_HEAP_SIZE             (0x0000400)
+    #define S_HEAP_SIZE             (0x0000200)
 #else
     #define S_HEAP_SIZE             (0x0000000)
 #endif
@@ -48,21 +48,21 @@
 
 /*  FIX ME : include stm32u5xx.h instead  */
 #define _SRAM2_TOP              (0x40000) /* 256Kbytes */
-#define _SRAM1_SIZE_MAX         (0x10000)  /*!< SRAM1=192k*/
-#define _SRAM2_SIZE_MAX         (0x30000 - BOOT_TFM_SHARED_DATA_SIZE)  /*!< SRAM2=64k -0x400 */
+#define _SRAM1_SIZE_MAX         (0x30000)  /*!< SRAM1=192k*/
+#define _SRAM2_SIZE_MAX         (0x10000 - BOOT_TFM_SHARED_DATA_SIZE)  /*!< SRAM2=64k -0x400 */
 #define _SRAM3_SIZE_MAX         (0x80000) /* 512Kbytes */
 #define _SRAM4_SIZE_MAX         (0x04000) /* 16Kbytes */
 
 /* Flash and internal SRAMs base addresses - Non secure aliased */
 #define _FLASH_BASE_NS          (0x08000000) /*!< FLASH(up to 512 KB) base address */
 #define _SRAM1_BASE_NS          (0x20000000) /*!< SRAM1(up to 192 KB) base address */
-#define _SRAM2_BASE_NS          (0x20010000) /*!< SRAM2(64 KB) base address */
+#define _SRAM2_BASE_NS          (0x20030000) /*!< SRAM2(64 KB) base address */
 #define _SRAM3_BASE_NS          (0x20040000) /*!< SRAM3(512 KB) base address */
 #define _SRAM4_BASE_NS          (0x28000000) /*!< SRAM4(16 KB) base address */
 /* Flash and internal SRAMs base addresses - Secure aliased */
 #define _FLASH_BASE_S           (0x0C000000) /*!< FLASH(up to 512 KB) base address */
 #define _SRAM1_BASE_S           (0x30000000) /*!< SRAM1(up to 192 KB) base address */
-#define _SRAM2_BASE_S           (0x30010000) /*!< SRAM2(64 KB) base address */
+#define _SRAM2_BASE_S           (0x30030000) /*!< SRAM2(64 KB) base address */
 #define _SRAM3_BASE_S           (0x30040000) /*!< SRAM3(512 KB) base address */
 #define _SRAM4_BASE_S           (0x38000000) /*!< SRAM4(16 KB) base address */
 
@@ -72,7 +72,7 @@
 /* boot info are placed and locked at top of SRAM2  */
 
 #define S_TOTAL_RAM2_SIZE       (_SRAM2_SIZE_MAX) /*! size require for Secure part */
-#define S_TOTAL_RAM1_SIZE       (0x00000)
+#define S_TOTAL_RAM1_SIZE       (0x10000)
 #define S_TOTAL_RAM_SIZE        (S_TOTAL_RAM2_SIZE + S_TOTAL_RAM1_SIZE)
 #define NS_TOTAL_RAM_SIZE       (TOTAL_RAM_SIZE - S_TOTAL_RAM_SIZE)
 
@@ -182,7 +182,7 @@
 /*  keep 256 bytes unused to place while(1) for non secure to enable */
 /*  regression from local tool with non secure attachment
  *  This avoid blocking board in case of hardening error */
-#define BL2_DATA_START                      (S_RAM_ALIAS(_SRAM1_SIZE_MAX))
+#define BL2_DATA_START                      (S_RAM_ALIAS(0x10000))
 #define BL2_DATA_SIZE                       (BOOT_TFM_SHARED_DATA_BASE - BL2_DATA_START)
 #define BL2_DATA_LIMIT                      (BL2_DATA_START + BL2_DATA_SIZE - 1)
 
