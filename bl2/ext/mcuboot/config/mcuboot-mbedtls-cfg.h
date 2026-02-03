@@ -120,7 +120,7 @@
 
 #if defined(MCUBOOT_SIGN_MASQ)
 #define MBEDTLS_MASQ_PPK_C
-//#define MBEDTLS_MASQ_ML_C
+#define MBEDTLS_MASQ_ML_C
 
 /* STD functions */
 #define MBEDTLS_PLATFORM_NO_STD_FUNCTIONS

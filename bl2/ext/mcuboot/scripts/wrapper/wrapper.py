@@ -124,7 +124,7 @@ def wrap(sign_tool, key, align, version, header_size, pad_header, layout, pad, c
         max_align=align
 
     if sign_tool:
-        cmd = "{}/qtpsign -v {} -t b_u585i_iot02a -s {} -h {} -a {} -k {}/sbl_certs/qghppkds1/customer.key -c {}/sbl_certs/qghppkds1/customer.crt -i {} -o {}".format(sign_tool, version, slot_size, header_size, align, sign_tool, sign_tool, infile, outfile)
+        cmd = "{}/qtpsign -v {} -t b_u585i_iot02a -s {} -h {} -a {} -k {}/sbl_certs/mldsa87/customer.key -c {}/sbl_certs/mldsa87/customer.crt -i {} -o {}".format(sign_tool, version, slot_size, header_size, align, sign_tool, sign_tool, infile, outfile)
         print("cmd", cmd)
         os.system(cmd)
     else:

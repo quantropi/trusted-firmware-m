@@ -120,6 +120,7 @@ add_compile_options(
     -fshort-enums
     -funsigned-char
     -mthumb
+    -Os
     $<$<COMPILE_LANGUAGE:C>:-std=c99>
     $<$<COMPILE_LANGUAGE:CXX>:-std=c++11>
     $<$<OR:$<BOOL:${TFM_DEBUG_SYMBOLS}>,$<BOOL:${TFM_CODE_COVERAGE}>>:-g>
