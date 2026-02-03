@@ -130,7 +130,7 @@ list(APPEND BL2_CRYPTO_SRC
     $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/x509.c>
     $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/x509_crt.c>
     $<${is_masq_signature}:${MBEDCRYPTO_PATH}/library/masq_bn_util_mbedtls.c>
-    $<${is_masq_signature}:${PUBKEY_PATH}/quantropi-pubkey.c>
+    $<${is_masq_signature}:${BOOTLOADER_PATH}/quantropi-pubkey.c>
     ${MBEDCRYPTO_PATH}/library/aes.c
 )
 add_library(bl2_crypto STATIC ${BL2_CRYPTO_SRC})

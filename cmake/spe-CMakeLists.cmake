@@ -161,8 +161,8 @@ if(BL2 AND PLATFORM_DEFAULT_IMAGE_SIGNING)
             $<TARGET_FILE_DIR:${NS_TARGET_NAME}>/${S_NS_SIGNED_TARGET_NAME}.bin
     )
 
-if (QTP_SIGN)
-    set(qtp_sign "-t ${QTP_SIGN}")
+if (BOOTLOADER_PATH)
+    set(qtp_sign "-t ${BOOTLOADER_PATH}")
 endif()
 
     if (MCUBOOT_IMAGE_NUMBER GREATER 1)

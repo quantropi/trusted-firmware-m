@@ -187,8 +187,8 @@ if (PLATFORM_DEFAULT_IMAGE_SIGNING)
     add_custom_target(tfm_s_signed_bin
         SOURCES tfm_s_signed.bin
     )
-if (QTP_SIGN)
-    set(qtp_sign "-t ${QTP_SIGN}")
+if (BOOTLOADER_PATH)
+    set(qtp_sign "-t ${BOOTLOADER_PATH}")
 endif()
 
     add_custom_command(OUTPUT tfm_s_signed.bin
