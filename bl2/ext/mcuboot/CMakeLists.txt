@@ -89,7 +89,7 @@ configure_file(include/mcuboot_config/mcuboot_config.h.in
 
 if (PLATFORM_DEFAULT_IMAGE_SIGNING)
     find_package(Python3)
-  if (NOT QTP_IMAGE_SIGNING)
+  if (NOT MCUBOOT_SIGN_MASQ)
     if(MCUBOOT_GENERATE_SIGNING_KEYPAIR)
         string(REGEX MATCH "[0-9]*$" SIG_LEN ${MCUBOOT_SIGNATURE_TYPE})
         string(REGEX MATCH "^[A-Z]*" SIG_TYPE ${MCUBOOT_SIGNATURE_TYPE})

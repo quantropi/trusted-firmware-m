@@ -176,11 +176,6 @@ config PLATFORM_DEFAULT_IMAGE_SIGNING
     help
       Use default image signing implementation
 
-config QTP_IMAGE_SIGNING
-    def_bool n
-    help
-      Use qtp image signing implementation
-
 config TFM_PLAT_SPECIFIC_MULTI_CORE_COMM
     bool "Use a platform specific inter-core communication"
     depends on TFM_MULTI_CORE_TOPOLOGY

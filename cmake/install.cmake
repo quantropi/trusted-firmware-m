@@ -201,7 +201,7 @@ if(BL2 AND PLATFORM_DEFAULT_IMAGE_SIGNING)
     install(DIRECTORY ${MCUBOOT_PATH}/scripts/imgtool
             DESTINATION ${INSTALL_IMAGE_SIGNING_DIR}/scripts)
 
-  if (NOT QTP_IMAGE_SIGNING)
+  if (NOT MCUBOOT_SIGN_MASQ)
     if (MCUBOOT_ENC_IMAGES)
         install(FILES ${MCUBOOT_KEY_ENC}
                 RENAME image_enc_key.pem
