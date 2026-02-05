@@ -105,7 +105,7 @@ def wrap(sign_tool, key, align, version, header_size, pad_header, layout, pad, c
          max_sectors, overwrite_only, endian, encrypt, infile, outfile,
          dependencies, hex_addr, erased_val, save_enctlv, public_key_format,
          security_counter, encrypt_keylen, measured_boot_record)
-    
+
     if measured_boot_record:
         if "_s.o" in layout:
             record_sw_type = "SPE"
@@ -124,7 +124,10 @@ def wrap(sign_tool, key, align, version, header_size, pad_header, layout, pad, c
         max_align=align
 
     if sign_tool:
-        cmd = "{}/qtpsign -v {} -t b_u585i_iot02a -s {} -h {} -a {} -k {}/sbl_certs/mldsa44/customer.key -c {}/sbl_certs/mldsa44/customer.crt -i {} -o {}".format(sign_tool, version, slot_size, header_size, align, sign_tool, sign_tool, infile, outfile)
+        if record_sw_type is not None:
+            cmd = "{}/qtpsign -v {} -t b_u585i_iot02a -s {} -h {} -a {} -k {}/sbl_certs/mldsa44/customer.key -c {}/sbl_certs/mldsa44/customer.crt -i {} -o {} -b {}".format(sign_tool, version, slot_size, header_size, align, sign_tool, sign_tool, infile, outfile, record_sw_type)
+        else:
+            cmd = "{}/qtpsign -v {} -t b_u585i_iot02a -s {} -h {} -a {} -k {}/sbl_certs/mldsa44/customer.key -c {}/sbl_certs/mldsa44/customer.crt -i {} -o {}".format(sign_tool, version, slot_size, header_size, align, sign_tool, sign_tool, infile, outfile)
         print("cmd", cmd)
         os.system(cmd)
     else:
