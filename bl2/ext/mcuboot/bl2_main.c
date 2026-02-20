@@ -52,14 +52,6 @@ static const char *key_type_str = "";
 __asm("  .global __ARM_use_no_argv\n");
 #endif
 
-#ifdef MCUBOOT_ENCRYPT_RSA
-#define BL2_MBEDTLS_MEM_BUF_LEN 0x6000
-#else
-#define BL2_MBEDTLS_MEM_BUF_LEN 0x4000
-#endif
-
-/* Static buffer to be used by mbedtls for memory allocation */
-static uint8_t mbedtls_mem_buf[BL2_MBEDTLS_MEM_BUF_LEN];
 struct boot_rsp rsp;
 
 static void do_boot(struct boot_rsp *rsp)
@@ -115,11 +107,6 @@ int main(void)
     enum tfm_plat_err_t plat_err;
     int32_t image_id;
 
-    /* Initialise the mbedtls static memory allocator so that mbedtls allocates
-     * memory from the provided static buffer instead of from the heap.
-     */
-    mbedtls_memory_buffer_alloc_init(mbedtls_mem_buf, BL2_MBEDTLS_MEM_BUF_LEN);
-
 #if (MCUBOOT_LOG_LEVEL > MCUBOOT_LOG_LEVEL_OFF) || defined(TEST_BL2)
     stdio_init();
 #if defined(TEST_BL2)
@@ -139,7 +126,7 @@ int main(void)
         boot_platform_error_state(err);
     }
 
-    BOOT_LOG_INF("Starting bootloader with buffer in address(0x%p) and size(0x%x)", mbedtls_mem_buf, BL2_MBEDTLS_MEM_BUF_LEN);
+    BOOT_LOG_INF("Starting bootloader");
 
     plat_err = tfm_plat_otp_init();
     if (plat_err != TFM_PLAT_ERR_SUCCESS) {

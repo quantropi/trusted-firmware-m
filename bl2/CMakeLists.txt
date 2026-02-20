@@ -157,6 +157,7 @@ target_include_directories(bl2_crypto
         ${MBEDCRYPTO_PATH}/include
         ${MBEDTLS_MASQ_SDK_DIR}/ds/lib_ghppk
         ${MBEDTLS_MASQ_SDK_DIR}/ds/lib_mldsa
+        ${MBEDTLS_MASQ_SDK_DIR}/kem/lib_hppk
         ${MBEDTLS_MASQ_SDK_DIR}/qeep/lib
 )
 
@@ -174,6 +175,8 @@ target_link_libraries(bl2_crypto
         masq_ds_ghppk-${MBEDTLS_MASQLIB_SUFFIX}
         -L${MBEDTLS_MASQ_SDK_DIR}/ds/lib_mldsa
         masq_ds_mldsa-${MBEDTLS_MASQLIB_SUFFIX}
+        -L${MBEDTLS_MASQ_SDK_DIR}/kem/lib_hppk
+        masq_kem_hppk-${MBEDTLS_MASQLIB_SUFFIX}
 )
 endif()
 

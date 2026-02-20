@@ -18,7 +18,7 @@
 #define __REGION_DEFS_H__
 #include "flash_layout.h"
 
-#define BL2_HEAP_SIZE           0x0005000
+#define BL2_HEAP_SIZE           0x000a000
 #define BL2_MSP_STACK_SIZE      0x0020000
 
 #define LOADER_NS_MSP_STACK_SIZE 0x0000400
