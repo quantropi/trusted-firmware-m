@@ -23,7 +23,6 @@ import imgtool.main
 parser_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))
 sys.path.append(parser_path)
 import macro_parser
-import subprocess
 
 sign_bin_size_re = re.compile(r"^\s*RE_SIGN_BIN_SIZE\s*=\s*(.*)")
 load_addr_re = re.compile(r"^\s*RE_IMAGE_LOAD_ADDRESS\s*=\s*(.*)")
@@ -88,11 +87,10 @@ os.environ['LANG'] = 'C.UTF-8'
               default='hash', help='In what format to add the public key to '
               'the image manifest: full key or hash of the key.')
 @click.option('-k', '--key', metavar='filename')
-@click.option('-t', '--sign-tool', metavar='filename')
 @click.command(help='''Create a signed or unsigned image\n
                INFILE and OUTFILE are parsed as Intel HEX if the params have
                .hex extension, otherwise binary format is used''')
-def wrap(sign_tool, key, align, version, header_size, pad_header, layout, pad, confirm,
+def wrap(key, align, version, header_size, pad_header, layout, pad, confirm,
          max_sectors, overwrite_only, endian, encrypt, infile, outfile,
          dependencies, hex_addr, erased_val, save_enctlv, public_key_format,
          security_counter, encrypt_keylen, measured_boot_record):
@@ -100,11 +98,6 @@ def wrap(sign_tool, key, align, version, header_size, pad_header, layout, pad, c
     slot_size = macro_parser.evaluate_macro(layout, sign_bin_size_re, 0, 1)
     load_addr = macro_parser.evaluate_macro(layout, load_addr_re, 0, 1)
     rom_fixed = macro_parser.evaluate_macro(layout, rom_fixed_re, 0, 1)
-
-    print("args:", sign_tool, key, align, version, header_size, pad_header, layout, pad, confirm,
-         max_sectors, overwrite_only, endian, encrypt, infile, outfile,
-         dependencies, hex_addr, erased_val, save_enctlv, public_key_format,
-         security_counter, encrypt_keylen, measured_boot_record)
 
     if measured_boot_record:
         if "_s.o" in layout:
@@ -123,15 +116,7 @@ def wrap(sign_tool, key, align, version, header_size, pad_header, layout, pad, c
         #max_align must be set to align
         max_align=align
 
-    if sign_tool:
-        if record_sw_type is not None:
-            cmd = "{}/qtpsign -v {} -t b_u585i_iot02a -s {} -h {} -a {} -k {}/sbl_certs/mldsa44/customer.key -c {}/sbl_certs/mldsa44/customer.crt -i {} -o {} -b {}".format(sign_tool, version, slot_size, header_size, align, sign_tool, sign_tool, infile, outfile, record_sw_type)
-        else:
-            cmd = "{}/qtpsign -v {} -t b_u585i_iot02a -s {} -h {} -a {} -k {}/sbl_certs/mldsa44/customer.key -c {}/sbl_certs/mldsa44/customer.crt -i {} -o {}".format(sign_tool, version, slot_size, header_size, align, sign_tool, sign_tool, infile, outfile)
-        print("cmd", cmd)
-        os.system(cmd)
-    else:
-        img = imgtool.image.Image(version=imgtool.version.decode_version(version),
+    img = imgtool.image.Image(version=imgtool.version.decode_version(version),
                               header_size=header_size, pad_header=pad_header,
                               pad=pad, confirm=confirm, align=int(align),
                               slot_size=slot_size, max_sectors=max_sectors,
@@ -142,18 +127,18 @@ def wrap(sign_tool, key, align, version, header_size, pad_header, layout, pad, c
                               security_counter=security_counter,
                               max_align=max_align)
 
-        img.load(infile)
-        key = imgtool.main.load_key(key) if key else None
-        enckey = imgtool.main.load_key(encrypt) if encrypt else None
-        if enckey and key:
-            if (isinstance(key, imgtool.keys.RSA) and
-               not isinstance(enckey, imgtool.keys.RSAPublic)):
-                # FIXME
-                raise click.UsageError("Signing and encryption must use the same "
-                                       "type of key")
-        img.create(key, public_key_format, enckey, dependencies, record_sw_type,
-                   None, encrypt_keylen=int(encrypt_keylen))
-        img.save(outfile, hex_addr)
+    img.load(infile)
+    key = imgtool.main.load_key(key) if key else None
+    enckey = imgtool.main.load_key(encrypt) if encrypt else None
+    if enckey and key:
+        if (isinstance(key, imgtool.keys.RSA) and
+           not isinstance(enckey, imgtool.keys.RSAPublic)):
+            # FIXME
+            raise click.UsageError("Signing and encryption must use the same "
+                                   "type of key")
+    img.create(key, public_key_format, enckey, dependencies, record_sw_type,
+               None, encrypt_keylen=int(encrypt_keylen))
+    img.save(outfile, hex_addr)
 
 
 if __name__ == '__main__':
