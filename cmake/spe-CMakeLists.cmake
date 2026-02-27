@@ -160,9 +160,12 @@ if(BL2 AND PLATFORM_DEFAULT_IMAGE_SIGNING)
             ${CMAKE_BINARY_DIR}/tfm_s_ns_signed.bin
             $<TARGET_FILE_DIR:${NS_TARGET_NAME}>/${S_NS_SIGNED_TARGET_NAME}.bin
     )
-
-if (BOOTLOADER_PATH)
-    set(qtp_sign "-t ${BOOTLOADER_PATH}")
+if (MCUBOOT_ENCRYPT_AES)
+    set(qtp_enc aes)
+else()
+    if (MCUBOOT_ENCRYPT_QEEP)
+        set(qtp_enc qeep)
+    endif()
 endif()
 
     if (MCUBOOT_IMAGE_NUMBER GREATER 1)
@@ -170,6 +173,27 @@ endif()
         add_custom_target(${NS_TARGET_NAME}_signed_bin
             SOURCES ${CMAKE_BINARY_DIR}/bin/${NS_TARGET_NAME}_signed.bin
         )
+if (BOOTLOADER_PATH)
+        add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/bin/${NS_TARGET_NAME}_signed.bin
+            DEPENDS ${NS_TARGET_NAME}_bin
+            DEPENDS $<TARGET_FILE_DIR:${NS_TARGET_NAME}>/${NS_TARGET_NAME}.bin
+            DEPENDS $<IF:$<BOOL:${MCUBOOT_GENERATE_SIGNING_KEYPAIR}>,generated_private_key,>
+            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/layout_files/signing_layout_ns.o
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/scripts
+
+            #Sign secure binary image with provided secret key
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/scripts/wrapper/qtpsign.py
+                -e ${qtp_enc}
+                -t ${BOOTLOADER_PATH}
+                --version ${MCUBOOT_IMAGE_VERSION_NS}
+                --layout ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/layout_files/signing_layout_ns.o
+                --align ${MCUBOOT_ALIGN_VAL}
+                -H ${BL2_HEADER_SIZE}
+                $<$<BOOL:${MCUBOOT_MEASURED_BOOT}>:--measured-boot-record>
+                $<TARGET_FILE_DIR:${NS_TARGET_NAME}>/${NS_TARGET_NAME}.bin
+                ${CMAKE_BINARY_DIR}/bin/${NS_TARGET_NAME}_signed.bin
+        )
+else()
         add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/bin/${NS_TARGET_NAME}_signed.bin
             DEPENDS ${NS_TARGET_NAME}_bin
             DEPENDS $<TARGET_FILE_DIR:${NS_TARGET_NAME}>/${NS_TARGET_NAME}.bin
@@ -179,7 +203,6 @@ endif()
 
             #Sign non-secure binary image with provided secret key
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/scripts/wrapper/wrapper.py
-                ${qtp_sign}
                 --version ${MCUBOOT_IMAGE_VERSION_NS}
                 --layout ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/layout_files/signing_layout_ns.o
                 --key ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/keys/image_ns_signing_private_key.pem
@@ -198,6 +221,7 @@ endif()
                 $<TARGET_FILE_DIR:${NS_TARGET_NAME}>/${NS_TARGET_NAME}.bin
                 ${CMAKE_BINARY_DIR}/bin/${NS_TARGET_NAME}_signed.bin
         )
+endif()
 
         # Create concatenated binary image from the two independently signed
         # binary file. This only uses the local assemble.py script (not from
