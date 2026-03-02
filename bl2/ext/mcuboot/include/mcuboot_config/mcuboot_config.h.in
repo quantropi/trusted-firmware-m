@@ -59,6 +59,7 @@ extern "C" {
 #cmakedefine MCUBOOT_ENC_IMAGES
 #cmakedefine MCUBOOT_ENCRYPT_QEEP
 #cmakedefine MCUBOOT_ENCRYPT_AES
+#cmakedefine MCUBOOT_ENCRYPT_RSA
 
 #ifdef MCUBOOT_ENCRYPT_QEEP
 #define MCUBOOT_ENCRYPT_MASQ

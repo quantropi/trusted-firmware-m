@@ -16,7 +16,6 @@ set(MCUBOOT_UPGRADE_STRATEGY      "SWAP_USING_SCRATCH" CACHE STRING    "Upgrade 
 set(TFM_PARTITION_PLATFORM                 ON          CACHE BOOL      "Enable platform partition")
 set(MCUBOOT_BOOTSTRAP                      ON          CACHE BOOL      "Allow initial state with images in secondary slots(empty primary slots)")
 set(MCUBOOT_ENC_IMAGES                     ON          CACHE BOOL      "Enable encrypted image upgrade support")
-set(MCUBOOT_ENCRYPT_RSA                    ON          CACHE BOOL      "Use RSA for encrypted image upgrade support")
 set(MCUBOOT_DATA_SHARING                   ON          CACHE BOOL      "Enable Data Sharing")
 ################################## Dependencies ################################################################################################
 set(TFM_PARTITION_INTERNAL_TRUSTED_STORAGE ON          CACHE BOOL      "Enable Internal Trusted Storage partition")
