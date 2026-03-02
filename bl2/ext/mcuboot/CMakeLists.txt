@@ -203,6 +203,7 @@ if (BOOTLOADER_PATH)
 
         #Sign secure binary image with provided secret key
         COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/wrapper/qtpsign.py
+            -s ${MCUBOOT_SIGNATURE_TYPE}
             -e ${qtp_enc}
             -t ${BOOTLOADER_PATH}
             -v ${MCUBOOT_IMAGE_VERSION_S}

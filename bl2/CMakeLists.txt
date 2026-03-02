@@ -12,14 +12,20 @@ find_package(Python3)
 project("Bootloader" VERSION 0.1.0 LANGUAGES C ASM)
 
 ############################### BL2_CRYPTO_CONFIG ##############################
-
-if(NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "")
-if(NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "MASQ")
+if ( (NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "qghppkds1")
+    AND (NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "qghppkds3")
+    AND (NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "qghppkds5")
+    AND (NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "mldsa44")
+    AND (NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "mldsa65")
+    AND (NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "mldsa87") )
+if (NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "")
     string(REGEX MATCH "[0-9]*$" SIG_LEN ${MCUBOOT_SIGNATURE_TYPE})
     string(REGEX MATCH "^[A-Z]*" SIG_TYPE ${MCUBOOT_SIGNATURE_TYPE})
 else()
     string(REGEX MATCH "^[A-Z]*" SIG_TYPE ${MCUBOOT_SIGNATURE_TYPE})
 endif()
+else ()
+    set(SIG_TYPE "MASQ")
 endif()
 
 set(is_ec_signature  "$<STREQUAL:${SIG_TYPE},EC>")
@@ -135,7 +141,13 @@ list(APPEND BL2_CRYPTO_SRC
 )
 add_library(bl2_crypto STATIC ${BL2_CRYPTO_SRC})
 
-if(NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "MASQ")
+if ( (NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "qghppkds1")
+    AND (NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "qghppkds3")
+    AND (NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "qghppkds5")
+    AND (NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "mldsa44")
+    AND (NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "mldsa65")
+    AND (NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "mldsa87") )
+if (NOT ${MCUBOOT_SIGNATURE_TYPE} STREQUAL "")
 target_include_directories(bl2_crypto
     PUBLIC
         ${MBEDCRYPTO_PATH}/library
@@ -150,6 +162,7 @@ target_link_libraries(bl2_crypto
     PUBLIC
         bl2_crypto_config
 )
+endif()
 else()
 target_include_directories(bl2_crypto
     PUBLIC
