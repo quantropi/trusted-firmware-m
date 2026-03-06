@@ -187,7 +187,7 @@ if (PLATFORM_DEFAULT_IMAGE_SIGNING)
     add_custom_target(tfm_s_signed_bin
         SOURCES tfm_s_signed.bin
     )
- 
+
 if (MCUBOOT_ENCRYPT_AES)
     set(qtp_enc aes)
 else()
@@ -204,7 +204,7 @@ if (BOOTLOADER_PATH)
         #Sign secure binary image with provided secret key
         COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/wrapper/qtpsign.py
             -s ${MCUBOOT_SIGNATURE_TYPE}
-            -e ${qtp_enc}
+            $<$<BOOL:${MCUBOOT_ENC_IMAGES}>:-e${qtp_enc}>
             -t ${BOOTLOADER_PATH}
             -v ${MCUBOOT_IMAGE_VERSION_S}
             --layout $<TARGET_OBJECTS:signing_layout_s>

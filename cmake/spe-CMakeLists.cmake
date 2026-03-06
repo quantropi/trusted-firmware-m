@@ -167,7 +167,6 @@ else()
         set(qtp_enc qeep)
     endif()
 endif()
-
     if (MCUBOOT_IMAGE_NUMBER GREATER 1)
 
         add_custom_target(${NS_TARGET_NAME}_signed_bin
@@ -184,7 +183,7 @@ if (BOOTLOADER_PATH)
             #Sign secure binary image with provided secret key
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/scripts/wrapper/qtpsign.py
                 -s ${MCUBOOT_SIGNATURE_TYPE}
-                -e ${qtp_enc}
+                $<$<BOOL:${MCUBOOT_ENC_IMAGES}>:-e${qtp_enc}>
                 -t ${BOOTLOADER_PATH}
                 --version ${MCUBOOT_IMAGE_VERSION_NS}
                 --layout ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/layout_files/signing_layout_ns.o
