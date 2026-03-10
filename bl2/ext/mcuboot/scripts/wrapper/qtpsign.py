@@ -82,9 +82,9 @@ def wrap(sign_tool, align, version, header_size, layout, infile, outfile, measur
         max_align=align
 
     if record_sw_type is not None:
-        cmd = "{}/qtpsign -v {} -t b_u585i_iot02a -s {} -h {} -a {} -k {}/sbl_certs/{}/customer.key -c {}/sbl_certs/{}/customer.crt -i {} -o {} -b {}".format(sign_tool, version, slot_size, header_size, align, sign_tool, sign_alg, sign_tool, sign_alg, infile, outfile, record_sw_type)
+        cmd = "{}/qtpsign -n -v {} -t b_u585i_iot02a -s {} -h {} -a {} -k {}/sbl_certs/{}/customer.key -c {}/sbl_certs/{}/customer.crt -i {} -o {} -b {}".format(sign_tool, version, slot_size, header_size, align, sign_tool, sign_alg, sign_tool, sign_alg, infile, outfile, record_sw_type)
     else:
-        cmd = "{}/qtpsign -v {} -t b_u585i_iot02a -s {} -h {} -a {} -k {}/sbl_certs/{}/customer.key -c {}/sbl_certs/{}/customer.crt -i {} -o {}".format(sign_tool, version, slot_size, header_size, align, sign_tool, sign_alg, sign_tool, sign_alg, infile, outfile)
+        cmd = "{}/qtpsign -n -v {} -t b_u585i_iot02a -s {} -h {} -a {} -k {}/sbl_certs/{}/customer.key -c {}/sbl_certs/{}/customer.crt -i {} -o {}".format(sign_tool, version, slot_size, header_size, align, sign_tool, sign_alg, sign_tool, sign_alg, infile, outfile)
   
     if encrypt is not None:
         cmd = cmd + " -e{}".format(encrypt)
