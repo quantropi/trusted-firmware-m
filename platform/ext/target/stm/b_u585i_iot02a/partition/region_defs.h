@@ -18,8 +18,9 @@
 #define __REGION_DEFS_H__
 #include "flash_layout.h"
 
-#define BL2_HEAP_SIZE           0x001c000
-#define BL2_MSP_STACK_SIZE      0x0011000
+/* at leat 0x1a000 stack size needed for mldsa87 */
+#define BL2_HEAP_SIZE           0x0011000
+#define BL2_MSP_STACK_SIZE      0x001b000
 
 #define LOADER_NS_MSP_STACK_SIZE 0x0000400
 #define LOADER_NS_HEAP_SIZE      0x0000200
