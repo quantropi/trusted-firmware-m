@@ -10,7 +10,7 @@
 
 ################################## BL2 #########################################################################################################
 set(MCUBOOT_IMAGE_NUMBER                   2           CACHE STRING    "Whether to combine S and NS into either 1 image, or sign each seperately")
-set(BL2_TRAILER_SIZE                       0x4000      CACHE STRING    "Trailer size")
+set(BL2_TRAILER_SIZE                       0x8000      CACHE STRING    "Trailer size")
 set(MCUBOOT_ALIGN_VAL                      16          CACHE STRING    "Align option to build image with imgtool")
 set(MCUBOOT_UPGRADE_STRATEGY      "SWAP_USING_SCRATCH" CACHE STRING    "Upgrade strategy for images")
 set(TFM_PARTITION_PLATFORM                 ON          CACHE BOOL      "Enable platform partition")
