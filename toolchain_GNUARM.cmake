@@ -199,8 +199,8 @@ set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS_INIT})
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS_INIT})
 set(CMAKE_ASM_FLAGS ${CMAKE_ASM_FLAGS_INIT})
 
-set(BL2_COMPILER_CP_FLAG -mfloat-abi=soft)
-set(BL2_LINKER_CP_OPTION -mfloat-abi=soft)
+set(BL2_COMPILER_CP_FLAG -mfloat-abi=hard -mfpu=fpv5-sp-d16)
+set(BL2_LINKER_CP_OPTION -mfloat-abi=hard -mfpu=fpv5-sp-d16)
 
 set(BL1_COMPILER_CP_FLAG -mfloat-abi=soft)
 set(BL1_LINKER_CP_OPTION -mfloat-abi=soft)
