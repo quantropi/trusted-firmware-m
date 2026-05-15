@@ -421,6 +421,10 @@ const unsigned char ecdsa_pub_key_1[] = {
 const unsigned int ecdsa_pub_key_len_1 = 120;
 #endif /* MCUBOOT_IMAGE_NUMBER > 1 */
 #endif /* !MCUBOOT_SIGN_EC384 */
+#elif defined(MCUBOOT_SIGN_MASQ)
+#define HAVE_KEYS
+extern const unsigned char quantropi_pub_key[];
+extern const unsigned int  quantropi_pub_key_len;
 #else
 #error "No public key available for given signing algorithm."
 #endif
@@ -520,6 +524,20 @@ const struct bootutil_key bootutil_keys[] = {
     },
 #endif /* MCUBOOT_IMAGE_NUMBER > 3 */
 };
+#elif defined(MCUBOOT_SIGN_MASQ)
+	const struct bootutil_key bootutil_keys[] = {
+	    { .key = quantropi_pub_key, .len = &quantropi_pub_key_len },
+	#if (MCUBOOT_IMAGE_NUMBER > 1)
+	    { .key = quantropi_pub_key, .len = &quantropi_pub_key_len },
+	#endif
+	#if (MCUBOOT_IMAGE_NUMBER > 2)
+	    { .key = quantropi_pub_key, .len = &quantropi_pub_key_len },
+	#endif
+	#if (MCUBOOT_IMAGE_NUMBER > 3)
+	    { .key = quantropi_pub_key, .len = &quantropi_pub_key_len },
+	#endif
+	};
+	const int bootutil_key_cnt = MCUBOOT_IMAGE_NUMBER;
 #endif /* MCUBOOT_SIGN_RSA */
 #endif /* HAVE_KEYS */
 

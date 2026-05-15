@@ -196,6 +196,15 @@ else()
     endif()
 endif()
 
+if(TFM_PLATFORM STREQUAL "arm/mps3/corstone300/fvp")
+    set(QTPSIGN_BOARD "fvp_corstone300")
+elseif(TFM_PLATFORM STREQUAL "stm/b_u585i_iot02a")
+    set(QTPSIGN_BOARD "b_u585i_iot02a")
+else()
+    message(FATAL_ERROR "Unsupported TFM_PLATFORM for qtpsign: ${TFM_PLATFORM}")
+endif()
+
+
 if (BOOTLOADER_PATH)
     add_custom_command(OUTPUT tfm_s_signed.bin
         DEPENDS tfm_s_bin signing_layout_s
@@ -203,6 +212,7 @@ if (BOOTLOADER_PATH)
 
         #Sign secure binary image with provided secret key
         COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/wrapper/qtpsign.py
+            -b ${QTPSIGN_BOARD}
             -s ${MCUBOOT_SIGNATURE_TYPE}
             $<$<BOOL:${MCUBOOT_ENC_IMAGES}>:-e${qtp_enc}>
             -t ${BOOTLOADER_PATH}

@@ -56,13 +56,16 @@ os.environ['LANG'] = 'C.UTF-8'
 @click.command(help='''Create a signed or unsigned image\n
                INFILE and OUTFILE are parsed as Intel HEX if the params have
                .hex extension, otherwise binary format is used''')
-def wrap(sign_tool, align, version, header_size, layout, infile, outfile, measured_boot_record, encrypt, sign_alg):
+@click.option('-b', '--board', type=click.Choice(['b_u585i_iot02a', 'fvp_corstone300']), default='b_u585i_iot02a',
+              help='List of supported targets for qtpsign.')
+
+def wrap(sign_tool, align, version, header_size, layout, infile, outfile, measured_boot_record, encrypt, sign_alg, board):
 
     slot_size = macro_parser.evaluate_macro(layout, sign_bin_size_re, 0, 1)
     load_addr = macro_parser.evaluate_macro(layout, load_addr_re, 0, 1)
     rom_fixed = macro_parser.evaluate_macro(layout, rom_fixed_re, 0, 1)
 
-    print("args:", sign_tool, align, version, header_size, layout, encrypt, infile, outfile, measured_boot_record, encrypt, sign_alg)
+    print("args:", sign_tool, align, version, header_size, layout, infile, outfile, measured_boot_record, encrypt, sign_alg, board)
     
     if measured_boot_record:
         if "_s.o" in layout:
@@ -82,9 +85,9 @@ def wrap(sign_tool, align, version, header_size, layout, infile, outfile, measur
         max_align=align
 
     if record_sw_type is not None:
-        cmd = "{}/qtpsign -n -v {} -t b_u585i_iot02a -s {} -h {} -a {} -k {}/sbl_certs/{}/customer.key -c {}/sbl_certs/{}/customer.crt -i {} -o {} -b {}".format(sign_tool, version, slot_size, header_size, align, sign_tool, sign_alg, sign_tool, sign_alg, infile, outfile, record_sw_type)
+        cmd = "{}/qtpsign -n -v {} -t {} -s {} -h {} -a {} -k {}/sbl_certs/{}/customer.key -c {}/sbl_certs/{}/customer.crt -i {} -o {} -b {}".format(sign_tool, version, board, slot_size, header_size, align, sign_tool, sign_alg, sign_tool, sign_alg, infile, outfile, record_sw_type)
     else:
-        cmd = "{}/qtpsign -n -v {} -t b_u585i_iot02a -s {} -h {} -a {} -k {}/sbl_certs/{}/customer.key -c {}/sbl_certs/{}/customer.crt -i {} -o {}".format(sign_tool, version, slot_size, header_size, align, sign_tool, sign_alg, sign_tool, sign_alg, infile, outfile)
+        cmd = "{}/qtpsign -n -v {} -t {} -s {} -h {} -a {} -k {}/sbl_certs/{}/customer.key -c {}/sbl_certs/{}/customer.crt -i {} -o {}".format(sign_tool, version, board, slot_size, header_size, align, sign_tool, sign_alg, sign_tool, sign_alg, infile, outfile)
   
     if encrypt is not None:
         cmd = cmd + " -e{}".format(encrypt)

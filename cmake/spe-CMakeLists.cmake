@@ -172,6 +172,15 @@ endif()
         add_custom_target(${NS_TARGET_NAME}_signed_bin
             SOURCES ${CMAKE_BINARY_DIR}/bin/${NS_TARGET_NAME}_signed.bin
         )
+
+if(TFM_PLATFORM STREQUAL "arm/mps3/corstone300/fvp")
+    set(QTPSIGN_BOARD "fvp_corstone300")
+elseif(TFM_PLATFORM STREQUAL "stm/b_u585i_iot02a")
+    set(QTPSIGN_BOARD "b_u585i_iot02a")
+else()
+    message(FATAL_ERROR "Unsupported TFM_PLATFORM for qtpsign: ${TFM_PLATFORM}")
+endif()
+
 if (BOOTLOADER_PATH)
         add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/bin/${NS_TARGET_NAME}_signed.bin
             DEPENDS ${NS_TARGET_NAME}_bin
@@ -182,6 +191,7 @@ if (BOOTLOADER_PATH)
 
             #Sign secure binary image with provided secret key
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/image_signing/scripts/wrapper/qtpsign.py
+                -b ${QTPSIGN_BOARD}
                 -s ${MCUBOOT_SIGNATURE_TYPE}
                 $<$<BOOL:${MCUBOOT_ENC_IMAGES}>:-e${qtp_enc}>
                 -t ${BOOTLOADER_PATH}

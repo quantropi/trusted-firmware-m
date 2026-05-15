@@ -20,8 +20,9 @@
 #include "flash_layout.h"
 #include "platform_base_address.h"
 
-#define BL2_HEAP_SIZE           (0x0001000)
-#define BL2_MSP_STACK_SIZE      (0x0001800)
+/* at least 0x1a000 stack size needed for mldsa87 */
+#define BL2_HEAP_SIZE           (0x0013000)
+#define BL2_MSP_STACK_SIZE      (0x001a000)
 
 #ifdef ENABLE_HEAP
     #define S_HEAP_SIZE             (0x0000200)
@@ -141,7 +142,7 @@
 
 /* Bootloader uses same memory as for secure image */
 #define BL2_DATA_START    (S_DATA_START)
-#define BL2_DATA_SIZE     (0x00010000)  /* 64 kB */
+#define BL2_DATA_SIZE     (0x00040000)  /* 256 kB */
 #define BL2_DATA_LIMIT    (BL2_DATA_START + BL2_DATA_SIZE - 1)
 #endif /* BL2 */
 
@@ -150,7 +151,7 @@
  * with TF-M Secure code's MSP stack
  */
 #define BOOT_TFM_SHARED_DATA_BASE S_DATA_START
-#define BOOT_TFM_SHARED_DATA_SIZE (0x400)
+#define BOOT_TFM_SHARED_DATA_SIZE (0x1000)
 #define BOOT_TFM_SHARED_DATA_LIMIT (BOOT_TFM_SHARED_DATA_BASE + \
                                     BOOT_TFM_SHARED_DATA_SIZE - 1)
 #define SHARED_BOOT_MEASUREMENT_BASE BOOT_TFM_SHARED_DATA_BASE
